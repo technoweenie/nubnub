@@ -13,11 +13,10 @@ This library attempts to be compliant to the [PubSubHubbub spec][spec].
 See [section 6.1][6.1] of the spec.
 
     var nub = require('nubnub');
-    nub.subscribe(POST_DATA, function(err, sub) {
-      sub.is_verified() // false
-      sub.callback      // some URL
-      sub.custom.value  // custom hub params
-    })
+    var sub = nub.subscribe(POST_DATA);
+    sub.is_verified() // false
+    sub.callback      // some URL
+    sub.custom.value  // custom hub params
 
 ## Verifying a Subscription
 
