@@ -23,7 +23,7 @@ See [section 6.1][6.1] of the spec.
 See [section 6.2][6.2] of the spec.
 
     // verify the subscription
-    sub.verify(function(err, resp) {
+    sub.check_verification(function(err, resp) {
       sub.is_verified() // true
     })
 

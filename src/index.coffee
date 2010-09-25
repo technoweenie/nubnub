@@ -1,5 +1,7 @@
-Query = require 'querystring'
-Url   = require 'url'
+Query        = require 'querystring'
+Url          = require 'url'
+Crypto       = require 'crypto'
+ScopedClient = require '../vendor/scoped-http-client/lib'
 
 # Represents a single PubSubHubbub (PSHb) subscription.  It is able to verify
 # subscription requests and publish new content to subscribers.
@@ -36,6 +38,47 @@ class Subscription
   # Returns true or false.
   is_verified: ->
     false
+
+  # Checks verification of the Subscription by passing a challenge string and
+  # checking for the response.  Sets the @verified property based on the 
+  # results.
+  #
+  # cb - A Function callback that is called when the request is finished.
+  #      err  - An exception object in case there are problems.
+  #      resp - The http.ServerResponse instance.
+  #
+  # Returns nothing.
+  check_verification: (cb) ->
+    client = @verify_client()
+    client.get() (err, resp, body) ->
+      if body != client.options.query['hub.challenge']
+        cb {error: "bad challenge"}, resp
+      else if resp.statusCode.toString().match(/^2\d\d/)
+        cb null, resp
+      else
+        cb {error: "bad status"}, resp
+
+  # Creates a ScopedClient instance for making the verification request.
+  #
+  # Returns a ScopedClient instance.
+  verify_client: ->
+    client = ScopedClient.create(@callback).
+      query(
+        'hub.mode':          @mode
+        'hub.topic':         @topic
+        'hub.lease_seconds': @lease_seconds
+        'hub.challenge':     @generate_challenge()
+      )
+    client.query('hub.verify_token', @verify_token) if @verify_token?
+    client
+
+  # Generates a unique challenge string by MD5ing the Subscription details
+  # and the current time in milliseconds.
+  #
+  # Returns a String MD5 hash.
+  generate_challenge: ->
+    data = "#{@mode}#{@topic}#{@callback}#{@secret}#{@verify_token}#{(new Date()).getTime()}"
+    Crypto.createHash('md5').update(data).digest("hex")
 
   # Checks whether this Subscription has the required fields for PSHb set.
   #
