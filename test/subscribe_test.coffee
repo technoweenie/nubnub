@@ -49,6 +49,11 @@ req['hub.mode'] = 'unsubscribe'
   req["hub.#{key}"] = 'foo'
   sub = nub.subscribe(query.stringify(req))
   assert.equal false, sub.is_valid()
-  assert.equal true, sub.bad_params.indexOf("hub.#{key}") > -1
+  assert.equal true,  sub.bad_params.indexOf("hub.#{key}") > -1
+
+# refresh validation
+sub.callback = sub.topic = 'http://server.com/foo'
+assert.equal false, sub.is_valid()
+assert.equal true,  sub.is_valid('refresh')
 
 console.log 'done'
