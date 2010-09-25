@@ -11,7 +11,6 @@ req =
 sub = nub.subscribe(query.stringify(req))
 
 # check valid request
-assert.equal false,                   sub.is_verified()
 assert.equal 'http://server.com/foo', sub.callback
 assert.equal 'subscribe',             sub.mode
 assert.equal 'http://server.com/foo', sub.topic

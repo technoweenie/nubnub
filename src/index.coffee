@@ -32,16 +32,8 @@ class Subscription
         key
     @bad_params.length == 0
 
-  # Public: Checks whether this Subscription has been verified by the
-  # subscriber.
-  #
-  # Returns true or false.
-  is_verified: ->
-    false
-
   # Checks verification of the Subscription by passing a challenge string and
-  # checking for the response.  Sets the @verified property based on the 
-  # results.
+  # checking for the response.  
   #
   # cb - A Function callback that is called when the request is finished.
   #      err  - An exception object in case there are problems.
@@ -50,7 +42,7 @@ class Subscription
   # Returns nothing.
   check_verification: (cb) ->
     client = @verify_client()
-    client.get() (err, resp, body) ->
+    client.get() (err, resp, body) =>
       if body != client.options.query['hub.challenge']
         cb {error: "bad challenge"}, resp
       else if resp.statusCode.toString().match(/^2\d\d/)

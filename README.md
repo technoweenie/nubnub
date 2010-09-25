@@ -14,9 +14,7 @@ See [section 6.1][6.1] of the spec.
 
     var nub = require('nubnub');
     var sub = nub.subscribe(POST_DATA);
-    sub.is_verified() // false
     sub.callback      // some URL
-    sub.custom.value  // custom hub params
 
 ## Verifying a Subscription
 
@@ -24,7 +22,7 @@ See [section 6.2][6.2] of the spec.
 
     // verify the subscription
     sub.check_verification(function(err, resp) {
-      sub.is_verified() // true
+
     })
 
 ## Pushing data to subscribers
