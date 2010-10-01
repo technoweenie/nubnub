@@ -1,6 +1,6 @@
 assert = require 'assert'
 query  = require 'querystring'
-nub    = require '../src'
+nub    = require '../src/server'
 
 req = 
   'hub.callback': 'http://server.com/foo'

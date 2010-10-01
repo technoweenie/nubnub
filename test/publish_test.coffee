@@ -2,7 +2,7 @@ assert = require 'assert'
 http   = require 'http'
 url    = require 'url'
 query  = require 'querystring'
-nub    = require '../src'
+nub    = require '../src/server'
 Crypto = require 'crypto'
 
 port   = 9999
