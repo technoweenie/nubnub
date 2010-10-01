@@ -3,6 +3,7 @@ http   = require 'http'
 url    = require 'url'
 query  = require 'querystring'
 nub    = require '../src'
+Crypto = require 'crypto'
 
 port   = 9999
 server = http.createServer (req, resp) ->
@@ -19,6 +20,13 @@ server = http.createServer (req, resp) ->
         resp.end "ok"
       when 'error'
         resp.writeHead 500
+        resp.end()
+      when 'secret'
+        sig = req.headers['x-hub-signature']
+        hmac = Crypto.createHmac 'sha1', 'monkey'
+        hmac.update body
+        st = if sig == hmac.digest('hex') then 200 else 400
+        resp.writeHead st
         resp.end()
 
 req = 
@@ -40,6 +48,19 @@ sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
 
 # errored
 sub.callback = sub.callback.replace(/json/, 'error')
+sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+  assert.equal 'bad status', err.error
+  done()
+
+# successful with secret
+sub.callback = sub.callback.replace(/error/, 'secret')
+sub.secret   = 'monkey'
+sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+  assert.equal null, err
+  done()
+
+# errored with secret
+sub.secret   = 'dog'
 sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
   assert.equal 'bad status', err.error
   done()

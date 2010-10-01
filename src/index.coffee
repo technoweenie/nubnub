@@ -22,6 +22,10 @@ class Subscription
         "content-type":    format.content_type
         "content-length":  data_len.toString()
       )
+    if @secret
+      hmac   = Crypto.createHmac 'sha1', @secret
+      hmac.update data
+      client = client.header 'x-hub-signature', hmac.digest('hex')
     client.post(data) (err, resp) =>
       @check_response_for_success err, resp, cb
 
