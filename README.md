@@ -30,7 +30,7 @@ See [section 6.2][6.2] of the spec.
 See [section 7.3][7.3] of the spec.
 
     // publish data 
-    sub.publish(data, {format: "atom"}, function(err, resp) {
+    sub.publish(items, {format: "atom"}, function(err, resp) {
       
     })
 

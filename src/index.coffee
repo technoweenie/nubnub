@@ -13,6 +13,24 @@ class Subscription
     @lease_seconds = parseInt(@lease_seconds) || 0
     @bad_params    = null
 
+  # Public: Checks verification of the Subscription by passing a challenge 
+  # string and checking for the response.  
+  #
+  # cb - A Function callback that is called when the request is finished.
+  #      err  - An exception object in case there are problems.
+  #      resp - The http.ServerResponse instance.
+  #
+  # Returns nothing.
+  check_verification: (cb) ->
+    client = @verify_client()
+    client.get() (err, resp, body) =>
+      if body != client.options.query['hub.challenge']
+        cb {error: "bad challenge"}, resp
+      else if resp.statusCode.toString().match(/^2\d\d/)
+        cb null, resp
+      else
+        cb {error: "bad status"}, resp
+
   # Public: Checks whether this Subscription is valid according to the PSHb 
   # spec.  If the Subscription is invalid, check @bad_params for an Array of
   # bad hub parameters.
@@ -31,24 +49,6 @@ class Subscription
       @bad_params = for key of @bad_params
         key
     @bad_params.length == 0
-
-  # Checks verification of the Subscription by passing a challenge string and
-  # checking for the response.  
-  #
-  # cb - A Function callback that is called when the request is finished.
-  #      err  - An exception object in case there are problems.
-  #      resp - The http.ServerResponse instance.
-  #
-  # Returns nothing.
-  check_verification: (cb) ->
-    client = @verify_client()
-    client.get() (err, resp, body) =>
-      if body != client.options.query['hub.challenge']
-        cb {error: "bad challenge"}, resp
-      else if resp.statusCode.toString().match(/^2\d\d/)
-        cb null, resp
-      else
-        cb {error: "bad status"}, resp
 
   # Creates a ScopedClient instance for making the verification request.
   #
