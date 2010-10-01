@@ -13,11 +13,23 @@ class Subscription
     @lease_seconds = parseInt(@lease_seconds) || 0
     @bad_params    = null
 
+  # Public: Publishes the given data to the Subscription callback.  If a 
+  # format option is given, automatically format the data.
+  #
+  # data    - Either raw String data, or an Array of items to be formatted.
+  # options - Hash of options.
+  #           format: Specifies a built-in formatter.
+  #           content_type: Specifies a content type for the request.  
+  #                         Formatters specify their own content type.
+  # cb      - Function callback to be called with (err, resp) when the 
+  #           request is complete.
+  #
+  # Returns nothing.
   publish: (data, options, cb) ->
     format   = Subscription.formatters[options.format]
     data     = format data if format?
     data_len = data.length
-    ctype    = if format then format.content_type else options.content_type
+    ctype    = format?.content_type || options.content_type
     client   = ScopedClient.create(@callback).
       headers(
         "content-type":    ctype
@@ -113,9 +125,14 @@ class Subscription
     else
       @bad_params["hub.#{key}"] = true
 
+  # Checks the given http.ClientResponse for a 200 status.
+  #
+  # err  - The Error object from an earlier http.Client request.
+  # resp - The http.ClientResponse instance from an earlier request.
+  # cb   - A Function callback that is called with (err, resp).
   check_response_for_success: (err, resp, cb) ->
     if resp.statusCode.toString().match(/^2\d\d/)
-      cb null, resp
+      cb err, resp
     else
       cb {error: "bad status"}, resp
 
