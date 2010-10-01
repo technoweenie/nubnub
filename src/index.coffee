@@ -13,13 +13,14 @@ class Subscription
     @lease_seconds = parseInt(@lease_seconds) || 0
     @bad_params    = null
 
-  publish: (items, options, cb) ->
+  publish: (data, options, cb) ->
     format   = Subscription.formatters[options.format]
-    data     = format items
+    data     = format data if format?
     data_len = data.length
+    ctype    = if format then format.content_type else options.content_type
     client   = ScopedClient.create(@callback).
       headers(
-        "content-type":    format.content_type
+        "content-type":    ctype
         "content-length":  data_len.toString()
       )
     if @secret

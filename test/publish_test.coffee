@@ -12,7 +12,7 @@ server = http.createServer (req, resp) ->
 
   req.on 'end', ->
     req_url = url.parse req.url, true
-
+    assert.equal 'application/json', req.headers['content-type']
     switch req_url.query.testing
       when 'json'
         assert.equal "[{\"abc\":1}]", body
@@ -43,6 +43,11 @@ calls = 2
 
 # successful publishing
 sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+  assert.equal null, err
+  done()
+
+# successful with raw body
+sub.publish "[{\"abc\":1}]", {content_type: 'application/json'}, (err, resp) ->
   assert.equal null, err
   done()
 
