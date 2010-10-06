@@ -52,21 +52,20 @@ assert.ok client.fullPath().match(/\?hub\./)
 sub.callback += '?testing=yes'
 assert.ok sub.verify_client().fullPath().match(/\?testing=yes&hub\./)
 
-server.listen port
-
-sub.check_verification (err, resp) ->
-  assert.equal null, err
-  assert.equal 200,  resp.statusCode
-
-  sub.callback = 'http://localhost:9999?testing=no'
+server.listen port, ->
   sub.check_verification (err, resp) ->
-    assert.ok err.error?
-    assert.equal 300,  resp.statusCode
+    assert.equal null, err
+    assert.equal 200,  resp.statusCode
 
-    sub.callback = 'http://localhost:9999?testing=challenge'
+    sub.callback = 'http://localhost:9999?testing=no'
     sub.check_verification (err, resp) ->
       assert.ok err.error?
-      assert.equal 200,  resp.statusCode
+      assert.equal 300,  resp.statusCode
 
-      server.close()
-      console.log 'done'
+      sub.callback = 'http://localhost:9999?testing=challenge'
+      sub.check_verification (err, resp) ->
+        assert.ok err.error?
+        assert.equal 200,  resp.statusCode
+
+        server.close()
+        console.log 'done'

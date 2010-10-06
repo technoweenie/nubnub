@@ -2,7 +2,7 @@ assert = require 'assert'
 http   = require 'http'
 url    = require 'url'
 query  = require 'querystring'
-nub    = require '../src/server'
+nub    = require '../src'
 Crypto = require 'crypto'
 
 port   = 9999
@@ -23,9 +23,7 @@ server = http.createServer (req, resp) ->
         resp.end()
       when 'secret'
         sig = req.headers['x-hub-signature']
-        hmac = Crypto.createHmac 'sha1', 'monkey'
-        hmac.update body
-        st = if sig == hmac.digest('hex') then 200 else 400
+        st = if nub.is_valid_signature(sig, 'monkey', body) then 200 else 400
         resp.writeHead st
         resp.end()
 
@@ -35,40 +33,39 @@ req =
   'hub.topic':         'http://server.com/foo'
   'hub.verify':        'sync'
   'hub.lease_seconds': '1000'
-sub = nub.subscribe(query.stringify(req))
-
-server.listen(port)
+sub = nub.handleSubscription(query.stringify(req))
 
 calls = 2
 
-# successful publishing
-sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
-  assert.equal null, err
-  done()
+server.listen port, ->
+  # successful publishing
+  sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+    assert.equal null, err
+    done()
 
-# successful with raw body
-sub.publish "[{\"abc\":1}]", {content_type: 'application/json'}, (err, resp) ->
-  assert.equal null, err
-  done()
+  # successful with raw body
+  sub.publish "[{\"abc\":1}]", {content_type: 'application/json'}, (err, resp) ->
+    assert.equal null, err
+    done()
 
-# errored
-sub.callback = sub.callback.replace(/json/, 'error')
-sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
-  assert.equal 'bad status', err.error
-  done()
+  # errored
+  sub.callback = sub.callback.replace(/json/, 'error')
+  sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+    assert.equal 'bad status', err.error
+    done()
 
-# successful with secret
-sub.callback = sub.callback.replace(/error/, 'secret')
-sub.secret   = 'monkey'
-sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
-  assert.equal null, err
-  done()
+  # successful with secret
+  sub.callback = sub.callback.replace(/error/, 'secret')
+  sub.secret   = 'monkey'
+  sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+    assert.equal null, err
+    done()
 
-# errored with secret
-sub.secret   = 'dog'
-sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
-  assert.equal 'bad status', err.error
-  done()
+  # errored with secret
+  sub.secret   = 'dog'
+  sub.publish [{abc: 1}], {format: 'json'}, (err, resp) ->
+    assert.equal 'bad status', err.error
+    done()
 
 done = ->
   calls -= 1
