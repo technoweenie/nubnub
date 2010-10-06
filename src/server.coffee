@@ -3,7 +3,7 @@ Url          = require 'url'
 Crypto       = require 'crypto'
 ScopedClient = require '../vendor/scoped-http-client/lib'
 
-# Represents a single PubSubHubbub (PSHb) subscription.  It is able to verify
+# Represents a single PubSubHubbub (PuSH) subscription.  It is able to verify
 # subscription requests and publish new content to subscribers.
 class Subscription
   constructor: (data) ->
@@ -58,7 +58,7 @@ class Subscription
       else
         @check_response_for_success err, resp, cb
 
-  # Public: Checks whether this Subscription is valid according to the PSHb 
+  # Public: Checks whether this Subscription is valid according to the PuSH 
   # spec.  If the Subscription is invalid, check @bad_params for an Array of
   # bad hub parameters.
   #
@@ -99,7 +99,7 @@ class Subscription
     data = "#{@mode}#{@topic}#{@callback}#{@secret}#{@verify_token}#{(new Date()).getTime()}"
     Crypto.createHash('md5').update(data).digest("hex")
 
-  # Checks whether this Subscription has the required fields for PSHb set.
+  # Checks whether this Subscription has the required fields for PuSH set.
   #
   # Returns nothing.
   check_required_keys: ->
@@ -161,7 +161,7 @@ exports.Subscription = Subscription
 exports.build = (data) ->
   new exports.Subscription data
 
-# Public: Handles a PSHb subscription request.
+# Public: Handles a PuSH subscription request.
 #
 # post_data - A raw String of the POST data.
 #
