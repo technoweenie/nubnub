@@ -41,8 +41,11 @@ See [section 7.3][7.3] of the spec.
 ## TODO
 
 * Example server implementations with various backends?  (redis, mysql, nstore)
+* Implementation of [Content Notification][7.1].
 * Logic for scanning feeds.
 * Logic for retrying failed verification or failed pushes as necessary.
+
+[7.1]: http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#rfc.section.7.1
 
 ## Development
 
