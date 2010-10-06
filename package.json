@@ -1,0 +1,7 @@
+{ "name":         "nubnub"
+, "version":      "0.1.0"
+, "author":       "technoweenie"
+, "engines":      [ "node >= 0.2.0" ]
+, "directories" : { "lib" : "./lib" }
+, "main":         "./lib"
+}
