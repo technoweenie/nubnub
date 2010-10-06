@@ -37,3 +37,15 @@ See [section 7.3][7.3] of the spec.
 [6.1]: http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#rfc.section.6.1
 [6.2]: http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#rfc.section.6.2
 [7.3]: http://pubsubhubbub.googlecode.com/svn/trunk/pubsubhubbub-core-0.3.html#rfc.section.7.3
+
+## TODO
+
+* Example server implementations with various backends?  (redis, mysql, nstore)
+* Logic for scanning feeds.
+* Logic for retrying failed verification or failed pushes as necessary.
+
+## Development
+
+Run this in the main directory to compile coffeescript to javascript as you go:
+
+    coffee -wc -o lib --no-wrap src/**/*.coffee

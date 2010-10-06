@@ -1,8 +1,6 @@
 http   = require 'http'
 Url    = require 'url'
-Query  = require 'querystring'
 nub    = require '../src'
-Crypto = require 'crypto'
 
 debugging = process.env.DEBUG
 
