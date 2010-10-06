@@ -53,9 +53,11 @@ client = http.createServer (req, resp) ->
 
 client.listen port+1
 
-client_instance = nub.createClient "http://localhost:#{port}/hub", 
-  "http://server.com/topic", 
-  "http://localhost:#{port+1}/callback"
+client_instance = nub.client(
+    hub:      "http://localhost:#{port}/hub"
+    topic:    "http://server.com/topic"
+    callback: "http://localhost:#{port+1}/callback"
+  )
 
 server.listen port, ->
   console.log "CLIENT: Sending subscription request..." if debugging
