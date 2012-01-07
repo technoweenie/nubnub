@@ -11,10 +11,10 @@ server = http.createServer (req, resp) ->
   switch req_url.query.testing
     when 'yes'
       resp.writeHead 200
-      resp.write req_url.query.hub.challenge
+      resp.write req_url.query["hub.challenge"]
     when 'no'
       resp.writeHead 300
-      resp.write req_url.query.hub.challenge
+      resp.write req_url.query["hub.challenge"]
     when 'challenge'
       resp.writeHead 200
       resp.write 'nada'

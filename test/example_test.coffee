@@ -42,7 +42,7 @@ client = http.createServer (req, resp) ->
     if req.method == 'GET'
       console.log "CLIENT: Receiving verification challenge..." if debugging
       resp.writeHead 200
-      resp.write Url.parse(req.url, true).query.hub.challenge
+      resp.write Url.parse(req.url, true).query["hub.challenge"]
     else
       console.log "CLIENT: Receiving published data..." if debugging
       resp.writeHead 200
