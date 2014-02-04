@@ -8,7 +8,7 @@ ScopedClient = require '../vendor/scoped-http-client/lib'
 class Subscription
   constructor: (data) ->
     Subscription.allowed_keys.forEach (key) =>
-      value  = data.hub[key]
+      value  = data["hub."+key]
       @[key] = value if value?
     @lease_seconds = parseInt(@lease_seconds) || 0
     @bad_params    = null
