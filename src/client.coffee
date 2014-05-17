@@ -66,9 +66,11 @@ class Subscriber
   post_to_hub: (mode, cb) ->
     params = @build_hub_params(mode)
     data   = Query.stringify params
-    ScopedClient.create(@hub).
-      header("content-type", "application/x-www-form-urlencoded").
-      post(data) cb
+    client = ScopedClient.create(@hub)
+    if @basic_authorization?
+      client.header("Authorization", "Basic #{new Buffer("#{@basic_authorization.user}:#{@basic_authorization.password}").toString('base64')}")
+    client.header("content-type", "application/x-www-form-urlencoded")
+      .post(data) cb
 
   # Assembles a Hash of params that get passed to a Hub as POST data.
   #
@@ -88,7 +90,7 @@ class Subscriber
 
 Subscriber.allowed_keys  = [
     'callback', 'topic', 'verify', 'hub'
-    'lease_seconds', 'secret', 'verify_token'
+    'lease_seconds', 'secret', 'verify_token', 'basic_authorization'
   ]
 
 # Public: Assembles a new Subscriber instance.
